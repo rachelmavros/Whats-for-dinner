@@ -178,6 +178,9 @@ body{
   .lucky-view-btn, .lucky-save-btn { font-size: .75rem; padding: 8px 14px; }
   .slot-display { padding: 1.75rem 1rem; }
 }
+
+.jar-bulk-btn{width:100%;padding:11px;border-radius:3px;border:1.5px solid #C4A070;background:#FFFDF5;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;color:#7A4020;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;letter-spacing:.5px;text-transform:uppercase;}
+.jar-bulk-btn:hover{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
 </style>
 </head>
 <body>
@@ -252,6 +255,7 @@ body{
     <div class="jar-title">🫙 My Dinner Jar</div>
     <div class="jar-sub">Add your go-to meals — family favorites, personal recipes, anything. Let the jar decide.</div>
     <button class="jar-add-btn-big" onclick="openJarModal(null)">+ Add a meal to the jar</button>
+    <button class="jar-bulk-btn" onclick="openBulkModal()">📋 Bulk import from notes</button>
     <div id="jarList" class="jar-list"></div>
     <button class="jar-pick-btn" id="jarPickBtn" onclick="pickFromJar()">Pick from the jar</button>
     <div id="jarResult"></div>
@@ -669,8 +673,54 @@ function openJarViewModal(idx) {
   document.getElementById('mSaveBtn').insertAdjacentElement('afterend', btn);
 }
 
+
+// Bulk import
+function openBulkModal() {
+  document.getElementById('bulkInput').value = '';
+  document.getElementById('bulkResult').textContent = '';
+  document.getElementById('bulkModalBg').style.display = 'flex';
+}
+
+function doBulkImport() {
+  const text = document.getElementById('bulkInput').value.trim();
+  if (!text) return;
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length) return;
+  const jar = getJar();
+  let added = 0;
+  for (const name of lines) {
+    if (!jar.some(j => j.name.toLowerCase() === name.toLowerCase())) {
+      const emoji = JAR_EMOJIS[Math.floor(Math.random() * JAR_EMOJIS.length)];
+      jar.push({ name, emoji, ingredients: [], steps: [] });
+      added++;
+    }
+  }
+  setJar(jar);
+  document.getElementById('bulkResult').textContent = added + ' meal' + (added !== 1 ? 's' : '') + ' added to your jar!';
+  setTimeout(() => {
+    closeModal('bulkModalBg');
+    renderJar();
+  }, 1200);
+}
+
 // Init
 renderAllSaved();
 </script>
+
+<div class="modal-bg" id="bulkModalBg" style="display:none;" onclick="closeBg(event,'bulkModalBg')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bulkModalBg')">✕</button>
+    <div class="modal-title-row">
+      <div class="modal-title">📋 Bulk Import</div>
+    </div>
+    <div class="modal-desc">Paste your list of meals below — one per line. They'll all be added to your jar instantly.</div>
+    <textarea class="jar-modal-textarea" id="bulkInput" style="min-height:160px;margin-top:1rem;" placeholder="Mom's lasagna&#10;Tuesday tacos&#10;Grandma's chicken soup&#10;Sheet pan salmon&#10;..."></textarea>
+    <div class="jar-modal-hint" style="margin-top:.4rem;">One meal name per line</div>
+    <div class="jar-modal-actions" style="margin-top:1rem;">
+      <button class="jar-modal-save" onclick="doBulkImport()">Import all</button>
+    </div>
+    <div id="bulkResult" style="margin-top:.75rem;font-size:.8rem;color:#4A7A00;font-style:italic;text-align:center;"></div>
+  </div>
+</div>
 </body>
 </html>
