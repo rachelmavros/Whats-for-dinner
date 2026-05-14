@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>What's for Dinner?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Lato',sans-serif;
+  min-height:100vh;
+  color:#3B1F0A;
+  background-color:#F5EDD8;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(180,120,60,0.13) 39px,rgba(180,120,60,0.13) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(180,120,60,0.08) 39px,rgba(180,120,60,0.08) 40px),
+    radial-gradient(ellipse at 50% 0%,rgba(210,140,60,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse at 100% 100%,rgba(180,80,40,0.10) 0%,transparent 50%);
+}
+.app{max-width:720px;margin:0 auto;padding:1.75rem 1.25rem 5rem;}
+.header-wrap{text-align:center;margin-bottom:1.75rem;}
+.header-rule{height:2px;background:linear-gradient(to right,transparent,#A0522D,transparent);margin-bottom:.75rem;}
+.logo{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:800;color:#6B2D0F;line-height:1;letter-spacing:-.5px;}
+.logo em{font-style:italic;color:#A0522D;}
+.tagline{font-size:.78rem;color:#9B7040;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-top:.3rem;}
+.header-deco{font-size:1.1rem;color:#A0522D;opacity:.5;margin-top:.3rem;letter-spacing:8px;}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:8px;overflow:hidden;margin-bottom:1.75rem;border:2px solid #A0522D;background:#EDE0C4;}
+.nav-btn{padding:10px 4px;border:none;border-right:1px solid #C4A070;font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;background:transparent;color:#6B2D0F;transition:all .2s;letter-spacing:.5px;text-transform:uppercase;}
+.nav-btn:last-child{border-right:none;}
+.nav-btn.active{background:#A0522D;color:#F5EDD8;}
+.nav-btn:hover:not(.active){background:#D4B48A;color:#3B1F0A;}
+.tab{display:none;}.tab.active{display:block;}
+.lucky-hero{text-align:center;padding:.5rem 0 1rem;}
+.lucky-hero-title{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:800;font-style:italic;color:#3B1F0A;margin-bottom:.3rem;line-height:1.1;}
+.lucky-hero-sub{font-size:.78rem;color:#9B7040;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem;}
+.lucky-source{display:flex;gap:6px;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;}
+.source-chip{background:transparent;border:1.5px solid #C4A070;border-radius:3px;padding:5px 14px;font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;color:#7A4020;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
+.source-chip.active{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
+.source-chip:hover:not(.active){background:#F0E0C8;border-color:#A0522D;}
+.slot-display{background:#FFFDF5;border-radius:4px;padding:2.5rem 1.5rem;margin:0 auto 1.5rem;max-width:380px;border:2px solid #A0522D;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:5px 5px 0 #6B2D0F;}
+.slot-display::before{content:'✦';position:absolute;top:.5rem;left:.75rem;color:#C4A070;font-size:.7rem;opacity:.6;}
+.slot-display::after{content:'✦';position:absolute;top:.5rem;right:.75rem;color:#C4A070;font-size:.7rem;opacity:.6;}
+.slot-emoji{font-size:4rem;margin-bottom:.6rem;display:block;}
+.slot-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#3B1F0A;margin-bottom:.4rem;}
+.slot-type{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:2px;background:#FFF0DC;color:#6B2D0F;border:1px solid #D4A060;display:inline-block;letter-spacing:.5px;text-transform:uppercase;}
+.slot-placeholder{color:#C4A882;font-style:italic;font-size:1rem;line-height:1.6;}
+.lucky-btn{background:#6B2D0F;color:#F5EDD8;border:2px solid #6B2D0F;border-radius:3px;padding:14px 48px;font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;font-style:italic;cursor:pointer;transition:all .15s;box-shadow:4px 4px 0 #3B1F0A;display:block;margin:0 auto;}
+.lucky-btn:hover{background:#A0522D;border-color:#A0522D;transform:translate(-2px,-2px);box-shadow:6px 6px 0 #3B1F0A;}
+.lucky-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #3B1F0A;}
+.lucky-actions{display:flex;gap:10px;justify-content:center;margin-top:1rem;flex-wrap:wrap;}
+.lucky-view-btn,.lucky-save-btn{background:transparent;border:1.5px solid #C4A070;border-radius:3px;padding:8px 22px;font-family:'Lato',sans-serif;font-size:.82rem;font-weight:700;color:#6B2D0F;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.3px;}
+.lucky-view-btn:hover,.lucky-save-btn:hover{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
+.lucky-save-btn.already-saved{border-color:#8B4513;color:#8B4513;background:#FFF8E8;}
+.spin-anim{animation:spinBounce .08s linear infinite;}
+@keyframes spinBounce{0%{transform:translateY(-2px);}50%{transform:translateY(2px);}100%{transform:translateY(-2px);}}
+.search-wrap{display:flex;gap:0;background:white;border-radius:6px;border:2px solid #A0522D;overflow:hidden;margin-bottom:.75rem;box-shadow:3px 3px 0 #A0522D;}
+.search-input{flex:1;border:none;outline:none;font-family:'Lato',sans-serif;font-size:.95rem;color:#3B1F0A;background:transparent;padding:10px 16px;}
+.search-input::placeholder{color:#C4A882;font-style:italic;}
+.search-btn{background:#6B2D0F;color:#F5EDD8;border:none;padding:10px 22px;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;border-left:2px solid #A0522D;}
+.search-btn:hover{background:#A0522D;}
+.search-note{font-size:.75rem;color:#9B7040;font-style:italic;margin-bottom:.75rem;text-align:center;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem;}
+.chip{background:transparent;border:1.5px solid #C4A070;border-radius:3px;padding:4px 12px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;color:#7A4020;cursor:pointer;transition:all .15s;}
+.chip:hover{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
+.section-label{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;font-style:italic;color:#6B2D0F;margin-bottom:.9rem;display:flex;align-items:center;gap:10px;}
+.label-line{flex:1;height:1px;background:repeating-linear-gradient(to right,#A0522D 0,#A0522D 4px,transparent 4px,transparent 8px);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;margin-bottom:2rem;}
+.recipe-card{background:#FFFDF5;border-radius:4px;padding:1.1rem;border:1.5px solid #D4B48A;transition:all .2s;cursor:pointer;position:relative;box-shadow:2px 2px 0 #C4A070;}
+.recipe-card:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 #A0522D;border-color:#A0522D;}
+.recipe-card.saved-card{border-color:#8B4513;background:#FFF8E8;}
+.recipe-card.ai-card{border-color:#8B6914;background:#FFFBF0;}
+.card-ribbon{position:absolute;top:0;right:0;font-size:.6rem;font-weight:700;padding:2px 8px;letter-spacing:.5px;text-transform:uppercase;border-bottom-left-radius:4px;}
+.card-ribbon.saved{background:#8B4513;color:#F5EDD8;}
+.card-ribbon.ai{background:#8B6914;color:#F5EDD8;}
+.card-emoji{font-size:1.9rem;margin-bottom:.5rem;display:block;}
+.card-name{font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem;color:#3B1F0A;margin-bottom:4px;line-height:1.2;}
+.card-desc{font-size:.76rem;color:#7A5030;line-height:1.5;margin-bottom:.65rem;font-style:italic;}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.65rem;}
+.tag{font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:.3px;text-transform:uppercase;}
+.tag-time{background:#FFF0DC;color:#7A4010;border:1px solid #D4A060;}
+.tag-type{background:#F0EBE0;color:#5A3A1A;border:1px solid #C4A070;}
+.btn-save,.btn-unsave{width:100%;padding:6px 0;border-radius:3px;border:1.5px solid;font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;}
+.btn-save{border-color:#C4A070;color:#6B2D0F;background:transparent;}
+.btn-save:hover{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
+.btn-unsave{border-color:#C4A070;color:#8B2020;background:transparent;}
+.btn-unsave:hover{background:#8B2020;color:#F5EDD8;border-color:#8B2020;}
+.empty-box{text-align:center;padding:2rem;background:#FFFDF5;border-radius:4px;border:1.5px dashed #C4A070;color:#C4A882;font-style:italic;grid-column:1/-1;font-size:.88rem;}
+.no-results{text-align:center;padding:2rem;background:#FFFDF5;border-radius:4px;border:1.5px dashed #D4A060;color:#B07050;font-style:italic;grid-column:1/-1;}
+.loading-box{text-align:center;padding:2rem;background:#FFFDF5;border-radius:4px;border:1.5px solid #D4B48A;color:#9B7040;font-style:italic;grid-column:1/-1;font-size:.88rem;animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.divider{height:1px;background:repeating-linear-gradient(to right,#A0522D 0,#A0522D 4px,transparent 4px,transparent 8px);margin:1.5rem 0;opacity:.4;}
+.query-label{font-size:.78rem;color:#9B7040;margin-bottom:.8rem;text-align:center;font-style:italic;}
+.query-label strong{color:#6B2D0F;font-style:normal;}
+.modal-bg{position:fixed;inset:0;background:rgba(40,15,5,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem;}
+.modal{background:#FFFDF5;border-radius:4px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;padding:1.75rem;position:relative;border:2px solid #A0522D;box-shadow:6px 6px 0 #6B2D0F;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:#F5EDD8;border:1.5px solid #C4A070;border-radius:3px;width:30px;height:30px;font-size:.9rem;cursor:pointer;font-weight:700;color:#6B2D0F;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.modal-close:hover{background:#6B2D0F;color:#F5EDD8;}
+.modal-emoji{font-size:2.8rem;margin-bottom:.4rem;display:block;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:800;color:#3B1F0A;margin-bottom:.3rem;line-height:1.1;}
+.modal-desc{font-size:.88rem;color:#7A5030;margin-bottom:1rem;line-height:1.5;font-style:italic;}
+.modal-meta{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
+.modal-tag{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:2px;text-transform:uppercase;letter-spacing:.5px;}
+.section-heading{font-family:'Playfair Display',serif;font-size:.85rem;font-weight:700;font-style:italic;color:#A0522D;margin-bottom:.6rem;margin-top:1.25rem;border-bottom:1px solid #D4B48A;padding-bottom:.3rem;}
+.ingredients-list{list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:1rem;}
+.ingredients-list li{font-size:.85rem;color:#3B1F0A;padding:5px 10px;background:#FFF8EC;border-radius:2px;display:flex;align-items:center;gap:8px;border-left:3px solid #A0522D;}
+.steps-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.steps-list li{font-size:.85rem;color:#3B1F0A;padding:8px 12px;background:#FFF8EC;border-radius:2px;display:flex;gap:10px;line-height:1.5;border-left:3px solid #C4A070;}
+.step-num{background:#6B2D0F;color:#F5EDD8;border-radius:2px;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;margin-top:1px;flex-shrink:0;}
+.modal-save-btn{width:100%;margin-top:1.25rem;padding:10px;border-radius:3px;border:1.5px solid #A0522D;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;background:transparent;color:#6B2D0F;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;}
+.modal-save-btn:hover{background:#6B2D0F;color:#F5EDD8;}
+.modal-save-btn.saved:hover{background:#8B2020;color:#F5EDD8;border-color:#8B2020;}
+.no-content-note{font-size:.82rem;color:#B09070;font-style:italic;text-align:center;padding:1rem;background:#FFF8EC;border-radius:2px;margin-top:.5rem;border:1px dashed #D4A060;}
+.jar-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:#3B1F0A;margin-bottom:.3rem;}
+.jar-sub{font-size:.83rem;color:#7A5030;margin-bottom:1.2rem;line-height:1.6;font-style:italic;}
+.jar-add-btn-big{width:100%;padding:11px;border-radius:3px;border:2px dashed #A0522D;background:#FFFDF5;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;color:#6B2D0F;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;letter-spacing:.5px;text-transform:uppercase;}
+.jar-add-btn-big:hover{background:#6B2D0F;color:#F5EDD8;border-style:solid;}
+.jar-list{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem;}
+.jar-item{background:#FFFDF5;border-radius:3px;padding:.85rem 1rem;display:flex;align-items:center;gap:10px;border:1.5px solid #D4B48A;transition:all .2s;cursor:pointer;box-shadow:2px 2px 0 #D4B48A;}
+.jar-item:hover{border-color:#6B2D0F;box-shadow:3px 3px 0 #6B2D0F;transform:translate(-1px,-1px);}
+.jar-item-emoji{font-size:1.5rem;}
+.jar-item-info{flex:1;}
+.jar-item-name{font-family:'Playfair Display',serif;font-weight:700;font-size:.92rem;color:#3B1F0A;}
+.jar-item-meta{font-size:.72rem;color:#9B7040;font-style:italic;margin-top:2px;}
+.jar-del-btn{background:none;border:none;color:#C4A070;font-size:1rem;cursor:pointer;font-weight:700;transition:color .15s;padding:4px 8px;border-radius:3px;}
+.jar-del-btn:hover{color:#8B2020;background:#FFF0F0;}
+.jar-pick-btn{width:100%;padding:13px;border-radius:3px;border:2px solid #6B2D0F;background:#6B2D0F;color:#F5EDD8;font-family:'Lato',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:1px;box-shadow:3px 3px 0 #3B1F0A;}
+.jar-pick-btn:hover{background:#A0522D;border-color:#A0522D;transform:translate(-1px,-1px);box-shadow:4px 4px 0 #3B1F0A;}
+.jar-pick-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
+.jar-result{margin-top:1rem;background:#FFFDF5;border-radius:4px;padding:1.25rem;text-align:center;border:2px solid #8B4513;animation:popIn .3s ease;box-shadow:4px 4px 0 #6B2D0F;}
+.jar-result-emoji{font-size:2.5rem;margin-bottom:.3rem;}
+.jar-result-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:#3B1F0A;}
+.jar-result-sub{font-size:.75rem;color:#9B7040;font-style:italic;margin-top:.3rem;}
+.jar-result-view{margin-top:.75rem;background:transparent;border:1.5px solid #C4A070;border-radius:3px;padding:6px 18px;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;color:#6B2D0F;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.3px;}
+.jar-result-view:hover{background:#6B2D0F;color:#F5EDD8;border-color:#6B2D0F;}
+.jar-empty{text-align:center;padding:2rem;background:#FFFDF5;border-radius:4px;border:1.5px dashed #D4B48A;color:#B09070;font-style:italic;font-size:.88rem;line-height:1.7;}
+@keyframes popIn{0%{transform:scale(.92);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.jar-modal-section{margin-bottom:1.1rem;}
+.jar-modal-label{font-family:'Playfair Display',serif;font-size:.82rem;font-weight:700;font-style:italic;color:#6B2D0F;margin-bottom:.4rem;border-bottom:1px solid #E8D8B8;padding-bottom:.2rem;}
+.jar-modal-input{width:100%;border:1.5px solid #C4A070;border-radius:3px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:.88rem;color:#3B1F0A;outline:none;transition:border-color .2s;background:#FFFDF5;}
+.jar-modal-input:focus{border-color:#6B2D0F;}
+.jar-modal-textarea{width:100%;border:1.5px solid #C4A070;border-radius:3px;padding:8px 12px;font-family:'Lato',sans-serif;font-size:.85rem;color:#3B1F0A;outline:none;transition:border-color .2s;resize:vertical;min-height:90px;background:#FFFDF5;line-height:1.6;}
+.jar-modal-textarea:focus{border-color:#6B2D0F;}
+.jar-modal-hint{font-size:.7rem;color:#B09070;font-style:italic;margin-top:.3rem;}
+.emoji-pick{display:flex;flex-wrap:wrap;gap:5px;margin-top:.4rem;}
+.emoji-opt{font-size:1.3rem;cursor:pointer;padding:5px;border-radius:3px;border:1.5px solid transparent;transition:all .15s;background:#FFF8EC;}
+.emoji-opt:hover,.emoji-opt.selected{border-color:#6B2D0F;background:#F5E8D0;}
+.jar-modal-actions{display:flex;gap:8px;margin-top:1.25rem;}
+.jar-modal-save{flex:1;padding:10px;border-radius:3px;border:2px solid #6B2D0F;background:#6B2D0F;color:#F5EDD8;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.5px;}
+.jar-modal-save:hover{background:#A0522D;border-color:#A0522D;}
+.jar-modal-delete{padding:10px 16px;border-radius:3px;border:1.5px solid #C4A070;background:transparent;color:#8B4513;font-family:'Lato',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
+.jar-modal-delete:hover{border-color:#8B2020;color:#8B2020;background:#FFF5F5;}
+.modal-title-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem;}
+
+@media (max-width: 600px) {
+  .app { padding: 1rem .9rem 4rem; }
+  .logo { font-size: 1.9rem; }
+  .tagline { font-size: .72rem; letter-spacing: 1.5px; }
+  .nav-btn { font-size: .7rem; padding: 10px 2px; }
+  .lucky-hero-title { font-size: 1.8rem; }
+  .lucky-btn { font-size: 1.1rem; padding: 13px 32px; }
+  .slot-name { font-size: 1.1rem; }
+  .slot-emoji { font-size: 3rem; }
+  .cards-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .card-name { font-size: .88rem; }
+  .card-desc { font-size: .72rem; }
+  .card-emoji { font-size: 1.6rem; }
+  .search-input { font-size: .9rem; }
+  .search-btn { font-size: .78rem; padding: 10px 14px; }
+  .chips { gap: 5px; }
+  .chip { font-size: .72rem; padding: 4px 10px; }
+  .modal { padding: 1.25rem; }
+  .modal-title { font-size: 1.3rem; }
+  .modal-desc { font-size: .82rem; }
+  .ingredients-list li, .steps-list li { font-size: .82rem; }
+  .lucky-source { gap: 5px; }
+  .source-chip { font-size: .7rem; padding: 5px 10px; }
+  .jar-title { font-size: 1.3rem; }
+  .jar-item-name { font-size: .85rem; }
+  .section-label { font-size: .78rem; }
+  .lucky-actions { gap: 8px; }
+  .lucky-view-btn, .lucky-save-btn { font-size: .75rem; padding: 8px 14px; }
+  .slot-display { padding: 1.75rem 1rem; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header-wrap">
+    <div class="header-rule"></div>
+    <div class="logo">What's for <em>Dinner?</em></div>
+    <div class="tagline">tell us your vibe — we'll find your meal</div>
+    <div class="header-deco">✦ ✦ ✦</div>
+    <div class="header-rule" style="margin-top:.75rem;margin-bottom:0;"></div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('lucky',this)">🎲 Lucky</button>
+    <button class="nav-btn" onclick="showTab('search',this)">🔍 Search</button>
+    <button class="nav-btn" onclick="showTab('saved',this)">⭐ Saved</button>
+    <button class="nav-btn" onclick="showTab('jar',this)">🫙 My Jar</button>
+  </div>
+
+  <div class="tab active" id="tab-lucky">
+    <div class="lucky-hero">
+      <div class="lucky-hero-title">I'm Feeling Lucky</div>
+      <div class="lucky-hero-sub">Pick a source — let fate decide</div>
+      <div class="lucky-source">
+        <div class="source-chip active" onclick="setLuckySource('all',this)">All recipes</div>
+        <div class="source-chip" onclick="setLuckySource('saved',this)">My saved ⭐</div>
+        <div class="source-chip" onclick="setLuckySource('jar',this)">My jar 🫙</div>
+      </div>
+      <div class="slot-display" id="slotDisplay">
+        <div class="slot-placeholder">Tap the button below<br>and let fate choose your dinner ✦</div>
+      </div>
+      <button class="lucky-btn" id="luckyBtn" onclick="doLucky()">🎲 Spin the wheel</button>
+      <div class="lucky-actions" id="luckyActions" style="display:none;">
+        <button class="lucky-view-btn" id="luckyViewBtn" onclick="viewLuckyRecipe()">View full recipe →</button>
+        <button class="lucky-save-btn" id="luckySaveBtn" onclick="toggleLuckySave()">★ Save this</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab" id="tab-search">
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" type="text" placeholder="something cozy and warm..." />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+    <div class="search-note">✦ <strong>AI-powered search</strong> — Claude suggests fresh recipes plus 40 built-ins</div>
+    <div class="chips">
+      <div class="chip" onclick="quickSearch('quick easy weeknight')">⚡ Quick</div>
+      <div class="chip" onclick="quickSearch('cozy comfort warm')">🧸 Comfort</div>
+      <div class="chip" onclick="quickSearch('light healthy fresh')">🥗 Healthy</div>
+      <div class="chip" onclick="quickSearch('spicy hot bold')">🌶️ Spicy</div>
+      <div class="chip" onclick="quickSearch('cheesy indulgent rich')">🧀 Cheesy</div>
+      <div class="chip" onclick="quickSearch('fancy date night special')">💫 Date night</div>
+      <div class="chip" onclick="quickSearch('vegetarian veggie plant')">🌿 Veggie</div>
+      <div class="chip" onclick="quickSearch('asian noodle rice')">🍜 Asian</div>
+    </div>
+    <div id="resultsSection" style="display:none;">
+      <div class="query-label" id="queryLabel"></div>
+      <div class="section-label">Results <span class="label-line"></span></div>
+      <div class="cards-grid" id="resultsGrid"></div>
+      <div class="divider"></div>
+    </div>
+    <div class="section-label">Your saved recipes <span class="label-line"></span></div>
+    <div class="cards-grid" id="savedGridSearch"></div>
+  </div>
+
+  <div class="tab" id="tab-saved">
+    <div class="section-label">Your saved recipes <span class="label-line"></span></div>
+    <div class="cards-grid" id="savedGridMain"></div>
+  </div>
+
+  <div class="tab" id="tab-jar">
+    <div class="jar-title">🫙 My Dinner Jar</div>
+    <div class="jar-sub">Add your go-to meals — family favorites, personal recipes, anything. Let the jar decide.</div>
+    <button class="jar-add-btn-big" onclick="openJarModal(null)">+ Add a meal to the jar</button>
+    <div id="jarList" class="jar-list"></div>
+    <button class="jar-pick-btn" id="jarPickBtn" onclick="pickFromJar()">Pick from the jar</button>
+    <div id="jarResult"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg" style="display:none;" onclick="closeBg(event,'modalBg')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalBg')">✕</button>
+    <span class="modal-emoji" id="mEmoji"></span>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-desc" id="mDesc"></div>
+    <div class="modal-meta" id="mMeta"></div>
+    <div class="section-heading" id="ingHeading">Ingredients</div>
+    <ul class="ingredients-list" id="mIngredients"></ul>
+    <div class="section-heading" id="stepsHeading">Steps</div>
+    <ol class="steps-list" id="mSteps"></ol>
+    <button class="modal-save-btn" id="mSaveBtn" onclick="toggleModalSave()"></button>
+  </div>
+</div>
+
+<div class="modal-bg" id="jarModalBg" style="display:none;" onclick="closeBg(event,'jarModalBg')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('jarModalBg')">✕</button>
+    <div id="jarModalContent"></div>
+  </div>
+</div>
+
+<script>
+const SAVED_KEY = 'dinner_saved_v3';
+const JAR_KEY = 'dinner_jar_v2';
+const JAR_EMOJIS = ["🍝","🍕","🍜","🌮","🍛","🍔","🥗","🥘","🍣","🫔","🍲","🥙","🍗","🐟","🧀","🥩","🍱","🫑","🧆","🥞","🍤","🌯","🥐","🍖","🍠"];
+
+const RECIPES = [
+  {name:"Spaghetti Carbonara",emoji:"🍝",description:"Silky pasta with crispy pancetta, eggs, and parmesan.",time:"25 min",type:"Italian",tags:["pasta","italian","rich","creamy","comfort","indulgent","cheesy","quick"],ingredients:["400g spaghetti","150g pancetta or guanciale","4 egg yolks","100g pecorino romano, grated","100g parmesan, grated","Black pepper","Salt"],steps:["Boil spaghetti in well-salted water until al dente.","Fry pancetta in a pan until crispy, then remove from heat.","Whisk egg yolks with grated cheeses and a big pinch of black pepper.","Drain pasta, reserving a cup of pasta water.","Toss hot pasta with pancetta, then off heat stir in egg mixture, adding pasta water to create a silky sauce.","Serve immediately with extra cheese and pepper."]},
+  {name:"Chicken Tikka Masala",emoji:"🍛",description:"Tender chicken in a smoky, spiced tomato-cream sauce.",time:"40 min",type:"Indian",tags:["indian","spicy","warm","cozy","comfort","rich","curry"],ingredients:["600g chicken breast, cubed","1 cup plain yogurt","2 tsp garam masala","1 tsp cumin","1 tsp turmeric","400g crushed tomatoes","1 cup heavy cream","2 cloves garlic","1 onion, diced","2 tbsp butter","Fresh cilantro"],steps:["Marinate chicken in yogurt, garam masala, cumin, and turmeric for 20 min.","Grill or pan-fry chicken until charred. Set aside.","Sauté onion and garlic in butter until golden.","Add crushed tomatoes and simmer 10 min.","Stir in cream and add chicken. Simmer 10 more min.","Garnish with cilantro and serve with rice or naan."]},
+  {name:"Beef Tacos",emoji:"🌮",description:"Crispy shells with seasoned beef, salsa, and fresh toppings.",time:"20 min",type:"Mexican",tags:["mexican","quick","easy","spicy","weeknight","fun","bold"],ingredients:["500g ground beef","8 taco shells","1 packet taco seasoning","1 cup salsa","1 cup shredded cheese","1 cup lettuce, shredded","2 tomatoes, diced","Sour cream"],steps:["Brown ground beef in a pan over medium-high heat.","Drain excess fat, add taco seasoning and 1/4 cup water.","Simmer 3-4 min until sauce thickens.","Warm taco shells per package instructions.","Fill shells with beef and top with cheese, lettuce, tomato, salsa, and sour cream."]},
+  {name:"Veggie Stir Fry",emoji:"🥦",description:"Crisp colorful vegetables tossed in a savory ginger-soy sauce.",time:"15 min",type:"Asian",tags:["asian","vegetarian","veggie","healthy","light","quick","easy","fresh"],ingredients:["2 cups broccoli florets","1 red bell pepper, sliced","1 cup snap peas","2 carrots, sliced","3 tbsp soy sauce","1 tbsp sesame oil","1 tbsp fresh ginger, grated","2 cloves garlic","1 tbsp cornstarch","Sesame seeds"],steps:["Mix soy sauce, sesame oil, ginger, garlic, and cornstarch in a bowl.","Heat a wok or large pan over high heat with oil.","Add hardest vegetables first, stir fry 3 min.","Add remaining veg and pour in sauce. Toss 2-3 min.","Serve over rice and sprinkle sesame seeds."]},
+  {name:"Chicken Parmesan",emoji:"🍗",description:"Crispy breaded chicken smothered in marinara and melted cheese.",time:"35 min",type:"Italian",tags:["italian","cheesy","comfort","indulgent","rich","baked"],ingredients:["2 chicken breasts, butterflied","1 cup breadcrumbs","1/2 cup parmesan, grated","2 eggs, beaten","1.5 cups marinara sauce","1.5 cups mozzarella, shredded","Italian seasoning","Olive oil","Salt and pepper"],steps:["Pound chicken to even thickness. Season with salt and pepper.","Dip in egg, then press into breadcrumb-parmesan mixture.","Pan fry in olive oil 3-4 min each side until golden.","Transfer to baking dish. Top with marinara and mozzarella.","Bake at 200°C for 15-18 min until cheese is bubbly.","Serve with spaghetti or a green salad."]},
+  {name:"Salmon with Lemon Butter",emoji:"🐟",description:"Pan-seared salmon with a bright, buttery lemon herb sauce.",time:"20 min",type:"Healthy",tags:["healthy","light","fresh","quick","fancy","date night","special","seafood"],ingredients:["2 salmon fillets","3 tbsp butter","2 cloves garlic, minced","Juice of 1 lemon","Fresh dill or parsley","Salt and pepper","Olive oil"],steps:["Season salmon with salt and pepper.","Heat olive oil in pan over medium-high. Cook 4 min per side.","Remove salmon. Melt butter in same pan, add garlic 1 min.","Add lemon juice and herbs. Pour over salmon and serve."]},
+  {name:"Beef Ramen",emoji:"🍜",description:"Rich, umami-packed broth with noodles and tender beef slices.",time:"30 min",type:"Asian",tags:["asian","noodle","warm","cozy","comfort","rich","japanese"],ingredients:["2 packs ramen noodles","300g beef sirloin, thinly sliced","4 cups beef broth","2 tbsp soy sauce","1 tbsp miso paste","2 soft-boiled eggs","2 cups bok choy","Green onions","Sesame oil","Nori sheets"],steps:["Bring broth to a simmer. Stir in soy sauce and miso paste.","Cook ramen noodles per package. Drain and divide into bowls.","Quickly sear beef slices in a hot pan, 1 min per side.","Blanch bok choy in the broth for 2 min.","Pour hot broth over noodles. Top with beef, bok choy, egg, and green onions.","Drizzle sesame oil and serve with nori."]},
+  {name:"Margherita Pizza",emoji:"🍕",description:"Classic tomato, fresh mozzarella, and basil on a crispy crust.",time:"30 min",type:"Italian",tags:["italian","cheesy","vegetarian","classic","comfort","fun"],ingredients:["1 pizza dough ball","1/2 cup tomato sauce","200g fresh mozzarella, sliced","Fresh basil leaves","Olive oil","Salt","Garlic powder"],steps:["Preheat oven to 250°C with a pizza stone or tray inside.","Stretch dough into a thin round on a floured surface.","Spread tomato sauce, leaving a border. Lay mozzarella on top.","Drizzle with olive oil. Bake 10-12 min until golden and bubbly.","Top with fresh basil immediately after baking."]},
+  {name:"Caesar Salad",emoji:"🥗",description:"Crisp romaine, crunchy croutons, and tangy caesar dressing.",time:"10 min",type:"Healthy",tags:["healthy","light","fresh","quick","easy","salad","vegetarian"],ingredients:["2 romaine hearts, chopped","1 cup croutons","50g parmesan, shaved","3 tbsp caesar dressing","Juice of half a lemon","Black pepper"],steps:["Wash and chop romaine into bite-size pieces.","Toss with caesar dressing and lemon juice.","Add croutons and toss gently.","Top with shaved parmesan and cracked black pepper.","Serve immediately."]},
+  {name:"Shrimp Fried Rice",emoji:"🍚",description:"Fluffy rice with plump shrimp, veggies, and savory soy sauce.",time:"20 min",type:"Asian",tags:["asian","quick","easy","weeknight","rice","shrimp","seafood"],ingredients:["3 cups cooked rice","300g shrimp, peeled","2 eggs","1 cup frozen peas and carrots","3 tbsp soy sauce","1 tbsp oyster sauce","2 cloves garlic","Sesame oil","Green onions"],steps:["Heat oil in a wok over high heat. Stir fry shrimp 2-3 min. Remove.","Add garlic, peas and carrots. Cook 2 min. Scramble eggs alongside.","Add rice, breaking up clumps. Stir fry 3 min.","Return shrimp, add soy and oyster sauce. Toss. Finish with sesame oil."]},
+  {name:"Mushroom Risotto",emoji:"🍄",description:"Creamy, slow-stirred arborio rice with earthy mushrooms.",time:"45 min",type:"Italian",tags:["italian","vegetarian","creamy","comfort","rich","fancy","date night","special"],ingredients:["300g arborio rice","500g mixed mushrooms, sliced","1 onion, finely diced","2 cloves garlic","1 cup white wine","1L vegetable stock, warm","50g butter","50g parmesan, grated","Fresh thyme","Olive oil"],steps:["Sauté onion and garlic in olive oil. Add mushrooms and cook 5 min.","Add rice and stir to coat. Pour in wine and stir until absorbed.","Add stock one ladle at a time, stirring constantly, about 20 min.","Remove from heat. Stir in butter and parmesan. Serve with thyme."]},
+  {name:"Mac and Cheese",emoji:"🧀",description:"Ultra creamy, cheesy pasta that hits every comfort spot.",time:"20 min",type:"American",tags:["american","cheesy","comfort","indulgent","quick","easy","vegetarian"],ingredients:["400g macaroni","3 tbsp butter","3 tbsp flour","2.5 cups whole milk","2 cups cheddar, grated","1/2 cup gruyere, grated","1 tsp mustard powder","Salt","Black pepper"],steps:["Cook macaroni al dente. Drain and set aside.","Melt butter, whisk in flour. Cook 1 min. Gradually whisk in milk until thick.","Remove from heat. Stir in cheeses, mustard, salt, and pepper.","Fold in macaroni and serve immediately."]},
+  {name:"Pad Thai",emoji:"🍜",description:"Tangy rice noodles with shrimp, peanuts, and bean sprouts.",time:"25 min",type:"Asian",tags:["asian","noodle","thai","tangy","quick","weeknight","shrimp"],ingredients:["200g rice noodles","300g shrimp","3 tbsp fish sauce","2 tbsp tamarind paste","1 tbsp sugar","2 eggs","1 cup bean sprouts","3 green onions","1/2 cup peanuts, crushed","Lime wedges","Chili flakes"],steps:["Soak rice noodles in warm water 20 min. Drain.","Mix fish sauce, tamarind, and sugar. Stir fry shrimp 2 min, push aside, scramble eggs.","Add noodles and sauce. Toss over high heat. Add bean sprouts and green onions.","Serve with peanuts, lime, and chili flakes."]},
+  {name:"Steak with Roasted Veggies",emoji:"🥩",description:"Juicy seared steak alongside caramelized seasonal vegetables.",time:"30 min",type:"American",tags:["american","fancy","date night","special","rich","indulgent","steak"],ingredients:["2 ribeye steaks","2 cups broccoli","1 cup cherry tomatoes","2 zucchinis, sliced","Olive oil","3 cloves garlic","Fresh rosemary","Salt and pepper","Butter"],steps:["Preheat oven to 220°C. Toss veg with olive oil, garlic, salt, pepper. Roast 20-25 min.","Season steaks. Sear in hot cast iron 3-4 min per side. Add butter and rosemary, baste.","Rest steak 5 min. Serve with roasted vegetables."]},
+  {name:"Lentil Soup",emoji:"🥣",description:"Hearty, warming soup packed with lentils and earthy spices.",time:"35 min",type:"Healthy",tags:["healthy","vegetarian","veggie","warm","cozy","comfort","light","soup"],ingredients:["1.5 cups red lentils","1 onion, diced","2 carrots, diced","3 cloves garlic","1 tsp cumin","1 tsp coriander","1/2 tsp turmeric","400g crushed tomatoes","1L vegetable broth","Lemon juice","Fresh parsley"],steps:["Sauté onion, carrot, and garlic in olive oil until soft. Add spices and stir 1 min.","Add lentils, tomatoes, and broth. Bring to a boil.","Simmer 20-25 min until lentils are tender. Squeeze in lemon juice.","Serve with crusty bread and fresh parsley."]},
+  {name:"Chicken Fajitas",emoji:"🫔",description:"Sizzling peppers and chicken wrapped in warm flour tortillas.",time:"25 min",type:"Mexican",tags:["mexican","quick","easy","weeknight","spicy","fun","bold"],ingredients:["500g chicken breast, sliced","2 bell peppers, sliced","1 onion, sliced","2 tsp fajita seasoning","8 flour tortillas","Sour cream","Guacamole","Salsa","Lime"],steps:["Toss chicken with fajita seasoning. Cook in a hot oiled pan 5-6 min. Set aside.","Sear peppers and onion on high heat 3-4 min. Warm tortillas.","Assemble with chicken, veg, sour cream, guac, and salsa. Squeeze lime over."]},
+  {name:"Veggie Curry",emoji:"🍲",description:"Vibrant coconut curry loaded with chickpeas and seasonal veg.",time:"30 min",type:"Indian",tags:["indian","vegetarian","veggie","spicy","warm","cozy","comfort","vegan"],ingredients:["1 can chickpeas","1 can coconut milk","400g crushed tomatoes","1 onion, diced","2 cloves garlic","1 tsp ginger","2 tsp curry powder","1 tsp turmeric","1 cup spinach","1 cup cauliflower florets","Basmati rice"],steps:["Sauté onion, garlic, and ginger. Add curry powder and turmeric, stir 1 min.","Add tomatoes and coconut milk. Simmer 10 min.","Add chickpeas and cauliflower. Cook 10 more min. Stir in spinach.","Serve over basmati rice."]},
+  {name:"Beef Bolognese",emoji:"🍝",description:"Slow-simmered meat sauce with rich tomato and red wine.",time:"1 hr",type:"Italian",tags:["italian","comfort","rich","indulgent","pasta","cozy","weekend"],ingredients:["500g ground beef","400g tagliatelle","1 onion, diced","2 carrots, diced","2 stalks celery","3 cloves garlic","1/2 cup red wine","400g crushed tomatoes","2 tbsp tomato paste","Splash of milk","Parmesan"],steps:["Sauté onion, carrot, celery, and garlic in olive oil. Brown beef well.","Add wine and evaporate. Stir in tomato paste, tomatoes, and a splash of milk.","Simmer on low 30-40 min. Toss with tagliatelle and parmesan."]},
+  {name:"French Onion Soup",emoji:"🧅",description:"Deep, sweet onion broth topped with crusty bread and gruyère.",time:"1 hr",type:"French",tags:["french","cozy","warm","comfort","cheesy","fancy","date night","special","soup"],ingredients:["4 large onions, thinly sliced","3 tbsp butter","1 tsp sugar","1/2 cup dry white wine","1L beef broth","4 slices baguette","1.5 cups gruyère, grated","Fresh thyme","Salt and pepper"],steps:["Cook onions with butter, sugar, and salt on low 35-40 min until caramelized.","Add wine, reduce. Add broth and thyme. Simmer 15 min.","Ladle into oven-safe bowls. Top with baguette and gruyère. Broil until golden."]},
+  {name:"Pesto Pasta",emoji:"🌿",description:"Fresh basil pesto tossed with al dente pasta and pine nuts.",time:"20 min",type:"Italian",tags:["italian","vegetarian","quick","easy","fresh","light","weeknight"],ingredients:["400g pasta","2 cups fresh basil","1/3 cup pine nuts","2 cloves garlic","50g parmesan, grated","1/2 cup olive oil","Salt and pepper"],steps:["Blend basil, pine nuts, garlic, and parmesan. Stream in olive oil until smooth.","Cook pasta al dente. Reserve 1/2 cup pasta water. Toss with pesto, loosening with pasta water.","Serve with extra parmesan."]},
+  {name:"Korean BBQ Bowl",emoji:"🥩",description:"Marinated bulgogi beef over steamed rice with kimchi.",time:"30 min",type:"Asian",tags:["asian","korean","bold","spicy","rice","fancy","date night","special"],ingredients:["400g beef sirloin, thinly sliced","3 tbsp soy sauce","1 tbsp sesame oil","1 tbsp brown sugar","2 cloves garlic, minced","1 tsp ginger","2 cups steamed rice","1 cup kimchi","Sesame seeds","Cucumber"],steps:["Mix soy sauce, sesame oil, sugar, garlic, and ginger. Marinate beef 15 min.","Cook beef in a hot pan 2-3 min until caramelized.","Serve over steamed rice with kimchi, cucumber, and sesame seeds."]},
+  {name:"Tomato Basil Soup",emoji:"🍅",description:"Velvety roasted tomato soup with fresh basil and cream.",time:"30 min",type:"Healthy",tags:["healthy","vegetarian","veggie","warm","cozy","comfort","light","soup","easy"],ingredients:["1kg ripe tomatoes, halved","1 onion, quartered","4 cloves garlic","3 tbsp olive oil","1 cup vegetable broth","1/4 cup heavy cream","Fresh basil","Salt and pepper"],steps:["Roast tomatoes, onion, and garlic with olive oil at 200°C for 25 min.","Blend with broth until smooth. Warm in a pot. Stir in cream and season.","Serve topped with fresh basil and crusty bread."]},
+  {name:"Chicken Quesadillas",emoji:"🫔",description:"Melty chicken and cheese folded in a crispy golden tortilla.",time:"15 min",type:"Mexican",tags:["mexican","quick","easy","cheesy","weeknight","fun"],ingredients:["2 cups cooked chicken, shredded","4 large flour tortillas","1.5 cups cheddar, shredded","1/2 cup salsa","1/4 cup sour cream","1/2 cup bell pepper, diced","1/4 cup green onions"],steps:["Mix chicken with salsa and bell pepper. Spread on half a tortilla, top with cheese and green onions. Fold.","Cook in a dry pan 2-3 min per side until golden.","Cut into wedges. Serve with sour cream and salsa."]},
+  {name:"Shakshuka",emoji:"🍳",description:"Eggs poached in a spiced tomato and pepper sauce.",time:"25 min",type:"Mediterranean",tags:["mediterranean","vegetarian","veggie","spicy","warm","cozy","bold","easy"],ingredients:["4 eggs","400g crushed tomatoes","1 red bell pepper, diced","1 onion, diced","3 cloves garlic","1 tsp cumin","1 tsp paprika","1/2 tsp chili flakes","Olive oil","Fresh parsley","Feta (optional)"],steps:["Sauté onion and pepper until soft. Add garlic and spices, cook 1 min.","Pour in tomatoes. Simmer 10 min and season well.","Make wells and crack eggs into them. Cover and cook 5-7 min until whites are set.","Top with feta and parsley. Serve with bread."]},
+  {name:"Stuffed Bell Peppers",emoji:"🫑",description:"Colorful peppers filled with seasoned rice and ground beef.",time:"45 min",type:"American",tags:["american","comfort","cozy","warm","healthy","baked","weekend"],ingredients:["4 large bell peppers","400g ground beef","1.5 cups cooked rice","400g crushed tomatoes","1 onion, diced","2 cloves garlic","1 tsp Italian seasoning","1 cup mozzarella, shredded"],steps:["Preheat oven to 190°C. Cut tops off peppers and scoop out seeds.","Brown beef with onion and garlic. Mix with rice, tomatoes, and Italian seasoning.","Stuff peppers, bake 30 min. Top with mozzarella and bake 10 more min until golden."]},
+  {name:"Chicken Noodle Soup",emoji:"🍲",description:"Classic, soothing broth with tender chicken and egg noodles.",time:"40 min",type:"American",tags:["american","comfort","cozy","warm","classic","soup","easy"],ingredients:["2 chicken breasts","1.5L chicken broth","2 cups egg noodles","2 carrots, sliced","2 stalks celery, sliced","1 onion, diced","2 cloves garlic","Fresh thyme","Fresh parsley"],steps:["Simmer chicken in broth 20 min. Remove, shred, and set aside.","Add veg and thyme to broth. Simmer 10 min. Add noodles and cook per package.","Return shredded chicken. Season and serve with parsley."]},
+  {name:"Beef Burgers",emoji:"🍔",description:"Juicy smash-style burgers with all your favorite toppings.",time:"20 min",type:"American",tags:["american","quick","easy","indulgent","fun","weeknight","classic"],ingredients:["500g ground beef (80/20)","4 brioche buns","4 slices cheddar","Lettuce","Tomato, sliced","Pickles","Ketchup","Mustard","Mayonnaise"],steps:["Divide beef into 4 balls. Season. Press flat in a hot cast iron pan. Cook 2-3 min.","Flip, add cheese, cook 1 more min. Toast buns.","Assemble with your favorite toppings."]},
+  {name:"Mango Shrimp Curry",emoji:"🥭",description:"Sweet mango and coconut curry with plump, juicy shrimp.",time:"30 min",type:"Asian",tags:["asian","seafood","sweet","tropical","fresh","light","spicy","summer"],ingredients:["400g shrimp, peeled","1 ripe mango, diced","1 can coconut milk","1 onion, diced","2 cloves garlic","1 tsp ginger","1 tsp curry powder","1 red chili","Lime juice","Cilantro","Jasmine rice"],steps:["Sauté onion, garlic, ginger, and chili. Add curry powder, stir 30 sec.","Pour in coconut milk and simmer 5 min. Add shrimp and cook 3-4 min until pink.","Stir in mango and lime juice. Serve over jasmine rice with cilantro."]},
+  {name:"Eggplant Parmesan",emoji:"🍆",description:"Layered fried eggplant with rich marinara and bubbling cheese.",time:"50 min",type:"Italian",tags:["italian","vegetarian","cheesy","comfort","indulgent","baked","rich"],ingredients:["2 large eggplants, sliced","2 cups marinara sauce","2 cups mozzarella, shredded","1/2 cup parmesan, grated","1 cup breadcrumbs","2 eggs, beaten","Olive oil","Fresh basil"],steps:["Salt eggplant slices 20 min, pat dry. Dip in egg then breadcrumbs. Pan-fry until golden.","Layer marinara, eggplant, mozzarella in a baking dish. Repeat. Top with parmesan.","Bake at 190°C for 25 min. Rest 5 min, top with fresh basil."]},
+  {name:"Fish Tacos",emoji:"🌮",description:"Crispy battered fish with cabbage slaw and lime crema.",time:"25 min",type:"Mexican",tags:["mexican","seafood","fresh","light","quick","fun","summer"],ingredients:["500g white fish fillets","1 cup flour","1 tsp paprika","1 tsp cumin","1 egg","1/2 cup beer","2 cups cabbage, shredded","1/2 cup sour cream","Lime juice","Corn tortillas","Hot sauce","Cilantro"],steps:["Whisk flour, paprika, cumin, egg, and beer into a batter. Dip fish strips and fry until golden.","Mix sour cream with lime juice for crema. Warm tortillas.","Assemble with fish, cabbage, crema, cilantro, and hot sauce."]},
+  {name:"Sushi Bowl",emoji:"🍱",description:"Deconstructed sushi with seasoned rice, salmon, and avocado.",time:"20 min",type:"Asian",tags:["asian","healthy","fresh","light","japanese","rice","seafood","fancy"],ingredients:["2 cups sushi rice, cooked","200g sashimi-grade salmon","1 avocado, sliced","1 cucumber, diced","2 tbsp soy sauce","1 tbsp rice vinegar","1 tsp sesame oil","Sesame seeds","Nori strips","Pickled ginger","Sriracha mayo"],steps:["Season cooked rice with rice vinegar, salt, and a pinch of sugar. Divide into bowls.","Arrange salmon, avocado, and cucumber over rice.","Drizzle soy sauce and sesame oil. Top with sesame seeds, nori, pickled ginger, and sriracha mayo."]},
+  {name:"Greek Salad with Falafel",emoji:"🥙",description:"Fresh veggies, feta, olives, and crispy falafel bites.",time:"25 min",type:"Mediterranean",tags:["mediterranean","vegetarian","veggie","healthy","fresh","light"],ingredients:["1 can chickpeas, drained","1/4 cup flour","1 tsp cumin","1 tsp coriander","2 cloves garlic","Cucumber, diced","Cherry tomatoes","Kalamata olives","100g feta","Olive oil","Lemon juice"],steps:["Blend chickpeas, garlic, cumin, coriander, and flour. Form patties. Pan-fry 3-4 min per side.","Combine cucumber, tomatoes, olives, and feta. Dress with olive oil and lemon.","Top salad with warm falafel and fresh parsley."]},
+  {name:"Butter Chicken",emoji:"🍛",description:"Velvety tomato sauce with tender chicken and warming spices.",time:"40 min",type:"Indian",tags:["indian","curry","warm","cozy","comfort","rich","spicy","mild"],ingredients:["600g chicken thighs, cubed","2 tbsp butter","1 onion, diced","3 cloves garlic","1 tsp ginger","2 tsp garam masala","1 tsp paprika","400g crushed tomatoes","1 cup heavy cream","Salt","Fresh cilantro"],steps:["Sauté onion in butter. Add garlic, ginger, and spices. Add tomatoes and simmer 10 min.","Add chicken and cook 15 min. Stir in cream and simmer 5 more min.","Serve over basmati rice with naan and cilantro."]},
+  {name:"Lamb Gyros",emoji:"🥙",description:"Spiced lamb with tzatziki, tomato, and onion in soft pita.",time:"30 min",type:"Mediterranean",tags:["mediterranean","fancy","special","rich","date night","bold"],ingredients:["500g ground lamb","1 tsp cumin","1 tsp oregano","1 tsp garlic powder","4 pita breads","1 cup greek yogurt","1 cucumber, grated","2 cloves garlic","Tomato","Red onion","Fresh dill","Lemon juice"],steps:["Mix lamb with spices. Cook as patties 8-10 min. Slice thinly.","Make tzatziki: mix yogurt, grated cucumber, garlic, dill, and lemon juice.","Warm pitas. Fill with lamb, tomato, onion, and tzatziki."]},
+  {name:"Lobster Bisque",emoji:"🦞",description:"Decadent creamy soup with chunks of sweet lobster meat.",time:"1 hr",type:"French",tags:["french","fancy","date night","special","rich","indulgent","seafood"],ingredients:["2 lobster tails","4 tbsp butter","1 onion, diced","2 cloves garlic","2 tbsp tomato paste","1/4 cup brandy","2 cups seafood stock","1.5 cups heavy cream","1 tsp paprika","Fresh tarragon"],steps:["Cook lobster tails 8 min. Remove meat and roughly chop.","Sauté onion and garlic in butter. Add tomato paste, paprika, and brandy. Reduce.","Pour in stock and simmer 15 min. Stir in cream and simmer 10 more min. Return lobster. Garnish with tarragon."]},
+  {name:"Avocado Toast with Egg",emoji:"🥑",description:"Smashed avocado and a perfectly poached egg on sourdough.",time:"10 min",type:"Healthy",tags:["healthy","light","fresh","quick","easy","vegetarian"],ingredients:["2 slices sourdough bread","2 ripe avocados","2 eggs","Lemon juice","Chili flakes","Salt and pepper","Everything bagel seasoning"],steps:["Toast sourdough. Mash avocado with lemon juice, salt, and pepper.","Poach eggs in simmering water with a splash of vinegar for 3 min.","Spread avocado on toast. Top with poached egg, chili flakes, and bagel seasoning."]},
+  {name:"Nicoise Salad",emoji:"🥗",description:"Elegant French salad with tuna, olives, eggs, and green beans.",time:"20 min",type:"French",tags:["french","healthy","light","fresh","fancy","date night","special","seafood"],ingredients:["200g canned tuna","4 eggs, soft-boiled","200g green beans, blanched","1 cup cherry tomatoes","1/2 cup Nicoise olives","Romaine lettuce","2 tbsp dijon mustard","3 tbsp olive oil","2 tbsp red wine vinegar"],steps:["Boil eggs 6 min, cool and halve. Blanch green beans 3 min.","Whisk dijon, olive oil, vinegar, salt, and pepper for dressing.","Arrange lettuce, then top with all ingredients. Drizzle dressing generously."]},
+  {name:"Teriyaki Salmon Bowl",emoji:"🍣",description:"Glazed salmon over rice with sesame seeds and greens.",time:"25 min",type:"Asian",tags:["asian","healthy","fresh","light","quick","weeknight","seafood","rice"],ingredients:["2 salmon fillets","3 tbsp soy sauce","2 tbsp mirin","1 tbsp honey","1 tsp sesame oil","2 cups steamed rice","1 cup edamame","1 cup cucumber, sliced","Sesame seeds","Green onions","Pickled ginger"],steps:["Mix soy sauce, mirin, honey, and sesame oil for teriyaki glaze. Brush salmon and cook 4 min per side.","Serve over steamed rice with edamame, cucumber, and pickled ginger.","Top with sesame seeds and green onions."]},
+  {name:"BBQ Pulled Pork",emoji:"🫙",description:"Slow-cooked pork with smoky, sweet barbecue sauce on a bun.",time:"4 hr",type:"American",tags:["american","comfort","indulgent","rich","smoky","bbq","slow","weekend"],ingredients:["1.5kg pork shoulder","1 cup BBQ sauce","1 tbsp smoked paprika","1 tbsp brown sugar","1 tsp garlic powder","1 tsp onion powder","Brioche buns","Coleslaw","Pickles"],steps:["Mix spices and rub all over pork. Slow cook with 1/2 cup BBQ sauce on low 8 hr or high 4 hr.","Remove pork and shred. Mix in remaining BBQ sauce.","Serve on toasted brioche buns with coleslaw and pickles."]}
+];
+
+// Storage
+function getSaved() { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; } }
+function setSaved(a) { localStorage.setItem(SAVED_KEY, JSON.stringify(a)); }
+function isSaved(n) { return getSaved().some(r => r.name === n); }
+function getJar() { try { return JSON.parse(localStorage.getItem(JAR_KEY) || '[]'); } catch { return []; } }
+function setJar(a) { localStorage.setItem(JAR_KEY, JSON.stringify(a)); }
+
+function saveRecipe(r) {
+  const s = getSaved();
+  if (!s.some(x => x.name === r.name)) { s.unshift(r); setSaved(s); }
+  renderAllSaved();
+  renderResults(lastLocalResults, lastAiResults);
+  updateLuckySaveBtn();
+}
+function unsaveRecipe(n) {
+  setSaved(getSaved().filter(r => r.name !== n));
+  renderAllSaved();
+  renderResults(lastLocalResults, lastAiResults);
+  updateLuckySaveBtn();
+}
+
+let lastLocalResults = [], lastAiResults = [], luckySource = 'all', luckyResult = null, modalRecipe = null, editingJarIdx = null, selectedEmoji = JAR_EMOJIS[0];
+
+// Nav
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'saved') renderAllSaved();
+  if (id === 'jar') renderJar();
+}
+
+// Cards
+function makeCard(r, isSavedCard, isAI) {
+  const saved = isSaved(r.name);
+  const rj = JSON.stringify(r).replace(/"/g, '&quot;');
+  let ribbon = '';
+  if (isSavedCard) ribbon = '<div class="card-ribbon saved">Saved</div>';
+  else if (isAI) ribbon = '<div class="card-ribbon ai">✦ AI</div>';
+  return `<div class="recipe-card${isSavedCard ? ' saved-card' : ''}${isAI ? ' ai-card' : ''}" onclick='openModal(${rj})'>
+    ${ribbon}
+    <span class="card-emoji">${r.emoji}</span>
+    <div class="card-name">${r.name}</div>
+    <div class="card-desc">${r.description}</div>
+    <div class="card-tags"><span class="tag tag-time">⏱ ${r.time}</span><span class="tag tag-type">${r.type}</span></div>
+    <div onclick="event.stopPropagation()">
+      ${saved ? `<button class="btn-unsave" onclick="unsaveRecipe('${r.name.replace(/'/g, "\\'")}')">✕ Remove</button>` : `<button class="btn-save" onclick='saveRecipe(${rj})'>★ Save</button>`}
+    </div>
+  </div>`;
+}
+
+function renderResults(localResults, aiResults) {
+  lastLocalResults = localResults || [];
+  lastAiResults = aiResults || [];
+  const g = document.getElementById('resultsGrid');
+  if (!g) return;
+  if (!lastLocalResults.length && !lastAiResults.length) {
+    g.innerHTML = '<div class="no-results">No matches found — try different words.</div>';
+    return;
+  }
+  let html = lastLocalResults.map(r => makeCard(r, false, false)).join('');
+  html += lastAiResults.map(r => makeCard(r, false, true)).join('');
+  g.innerHTML = html;
+}
+
+function renderAllSaved() {
+  const saved = getSaved();
+  ['savedGridSearch', 'savedGridMain'].forEach(id => {
+    const g = document.getElementById(id);
+    if (!g) return;
+    g.innerHTML = saved.length === 0
+      ? '<div class="empty-box">No saved recipes yet — search and tap ★ Save to add some</div>'
+      : saved.map(r => makeCard(r, true, false)).join('');
+  });
+}
+
+// Local search scoring
+function scoreRecipe(r, words) {
+  let s = 0;
+  for (const w of words) {
+    if (r.name.toLowerCase().includes(w)) s += 3;
+    if (r.type.toLowerCase().includes(w)) s += 2;
+    if (r.description.toLowerCase().includes(w)) s += 1;
+    for (const t of r.tags) { if (t.includes(w) || w.includes(t)) s += 2; }
+  }
+  return s;
+}
+
+// AI search via Netlify function
+async function aiSearch(query) {
+  const res = await fetch('/.netlify/functions/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Server error (${res.status})`);
+  }
+  return await res.json();
+}
+
+// Main search
+async function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) return;
+  const words = q.split(/\s+/).filter(w => w.length > 2);
+
+  const localResults = RECIPES
+    .map(r => ({ r, s: scoreRecipe(r, words) }))
+    .filter(x => x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, 4)
+    .map(x => x.r);
+
+  document.getElementById('queryLabel').innerHTML = `Results for <strong>"${q}"</strong>`;
+  document.getElementById('resultsSection').style.display = 'block';
+
+  // Show local results immediately + loading indicator
+  lastLocalResults = localResults;
+  lastAiResults = [];
+  const g = document.getElementById('resultsGrid');
+  g.innerHTML = localResults.map(r => makeCard(r, false, false)).join('')
+    + '<div class="loading-box" style="grid-column:1/-1">✦ Claude is finding more ideas...</div>';
+
+  try {
+    const aiResults = await aiSearch(q);
+    renderResults(localResults, aiResults || []);
+  } catch (e) {
+    renderResults(localResults, []);
+    const note = document.createElement('div');
+    note.style.cssText = 'grid-column:1/-1;font-size:.75rem;color:#8B2020;font-style:italic;text-align:center;padding:.5rem;';
+    note.textContent = 'AI suggestions unavailable: ' + e.message;
+    document.getElementById('resultsGrid').appendChild(note);
+  }
+}
+
+function quickSearch(q) { document.getElementById('searchInput').value = q; doSearch(); }
+document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+// Modal
+function openModal(r) {
+  modalRecipe = r;
+  document.getElementById('mEmoji').textContent = r.emoji;
+  document.getElementById('mTitle').textContent = r.name;
+  document.getElementById('mDesc').textContent = r.description || '';
+  document.getElementById('mMeta').innerHTML = `<span class="modal-tag tag-time">⏱ ${r.time || '—'}</span><span class="modal-tag tag-type">${r.type || 'Custom'}</span>`;
+  const ing = document.getElementById('mIngredients'), steps = document.getElementById('mSteps');
+  const ih = document.getElementById('ingHeading'), sh = document.getElementById('stepsHeading');
+  if (r.ingredients && r.ingredients.length) {
+    ing.innerHTML = r.ingredients.map(i => `<li>${i}</li>`).join('');
+    ing.style.display = ''; ih.style.display = '';
+  } else { ing.innerHTML = ''; ing.style.display = 'none'; ih.style.display = 'none'; }
+  if (r.steps && r.steps.length) {
+    steps.innerHTML = r.steps.map((s, i) => `<li><span class="step-num">${i + 1}</span>${s}</li>`).join('');
+    steps.style.display = ''; sh.style.display = '';
+  } else { steps.innerHTML = ''; steps.style.display = 'none'; sh.style.display = 'none'; }
+  document.getElementById('noContentNote') && document.getElementById('noContentNote').remove();
+  if ((!r.ingredients || !r.ingredients.length) && (!r.steps || !r.steps.length)) {
+    ih.insertAdjacentHTML('afterend', '<div class="no-content-note" id="noContentNote">No recipe details yet.</div>');
+  }
+  updateModalSaveBtn();
+  const prev = document.getElementById('jarEditFromView');
+  if (prev) prev.remove();
+  document.getElementById('modalBg').style.display = 'flex';
+}
+
+function updateModalSaveBtn() {
+  const btn = document.getElementById('mSaveBtn');
+  if (!modalRecipe || modalRecipe._jarIdx !== undefined) { btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  const saved = isSaved(modalRecipe.name);
+  btn.textContent = saved ? '✕ Remove from saved' : '★ Save this recipe';
+  btn.className = 'modal-save-btn' + (saved ? ' saved' : '');
+}
+
+function toggleModalSave() {
+  if (isSaved(modalRecipe.name)) unsaveRecipe(modalRecipe.name);
+  else saveRecipe(modalRecipe);
+  updateModalSaveBtn();
+}
+
+function closeModal(bgId) { document.getElementById(bgId).style.display = 'none'; }
+function closeBg(e, bgId) { if (e.target === document.getElementById(bgId)) closeModal(bgId); }
+
+// Lucky
+function setLuckySource(s, el) {
+  luckySource = s;
+  document.querySelectorAll('.source-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('slotDisplay').innerHTML = '<div class="slot-placeholder">Tap the button below<br>and let fate choose your dinner ✦</div>';
+  document.getElementById('luckyActions').style.display = 'none';
+  luckyResult = null;
+}
+
+function getPool() {
+  if (luckySource === 'saved') return getSaved();
+  if (luckySource === 'jar') return getJar().map(j => ({ ...j, type: 'Custom', time: '—', description: 'Your dinner jar pick!' }));
+  return RECIPES;
+}
+
+function updateLuckySaveBtn() {
+  if (!luckyResult || luckyResult.type === 'Custom') return;
+  const btn = document.getElementById('luckySaveBtn');
+  if (!btn) return;
+  const saved = isSaved(luckyResult.name);
+  btn.textContent = saved ? '✓ Saved!' : '★ Save this';
+  btn.className = 'lucky-save-btn' + (saved ? ' already-saved' : '');
+}
+
+function toggleLuckySave() {
+  if (!luckyResult) return;
+  if (isSaved(luckyResult.name)) unsaveRecipe(luckyResult.name);
+  else saveRecipe(luckyResult);
+  updateLuckySaveBtn();
+}
+
+function doLucky() {
+  const pool = getPool();
+  if (!pool.length) {
+    document.getElementById('slotDisplay').innerHTML = '<div class="slot-placeholder">Nothing here yet!<br>Add some recipes first.</div>';
+    return;
+  }
+  const btn = document.getElementById('luckyBtn');
+  btn.disabled = true;
+  btn.textContent = 'Spinning...';
+  document.getElementById('luckyActions').style.display = 'none';
+  let count = 0, total = 20;
+  const iv = setInterval(() => {
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById('slotDisplay').innerHTML = `<div class="slot-emoji spin-anim">${r.emoji}</div><div class="slot-name">${r.name}</div><div class="slot-type">${r.type}</div>`;
+    count++;
+    if (count >= total) {
+      clearInterval(iv);
+      luckyResult = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById('slotDisplay').innerHTML = `<div class="slot-emoji" style="font-size:4rem">${luckyResult.emoji}</div><div class="slot-name">${luckyResult.name}</div><div class="slot-type">${luckyResult.type}</div>`;
+      btn.disabled = false;
+      btn.textContent = '🎲 Spin again';
+      document.getElementById('luckyActions').style.display = 'flex';
+      const saveBtn = document.getElementById('luckySaveBtn');
+      const viewBtn = document.getElementById('luckyViewBtn');
+      if (luckyResult.type === 'Custom') { saveBtn.style.display = 'none'; } 
+      else { saveBtn.style.display = ''; updateLuckySaveBtn(); }
+      if (luckyResult.type === 'Custom' && (!luckyResult.ingredients || !luckyResult.ingredients.length) && (!luckyResult.steps || !luckyResult.steps.length)) {
+        viewBtn.style.display = 'none';
+      } else { viewBtn.style.display = ''; }
+    }
+  }, 80);
+}
+
+function viewLuckyRecipe() { if (luckyResult) openModal(luckyResult); }
+
+// Jar
+function renderJar() {
+  const jar = getJar(), list = document.getElementById('jarList'), btn = document.getElementById('jarPickBtn');
+  document.getElementById('jarResult').innerHTML = '';
+  if (!jar.length) {
+    list.innerHTML = '<div class="jar-empty">Your jar is empty.<br>Add your go-to meals — family recipes, old favorites, anything.</div>';
+    btn.disabled = true;
+  } else {
+    list.innerHTML = jar.map((j, i) => `
+      <div class="jar-item" onclick="openJarModal(${i})">
+        <span class="jar-item-emoji">${j.emoji}</span>
+        <div class="jar-item-info">
+          <div class="jar-item-name">${j.name}</div>
+          <div class="jar-item-meta">${j.ingredients && j.ingredients.length ? j.ingredients.length + ' ingredients' : 'No ingredients'} · ${j.steps && j.steps.length ? j.steps.length + ' steps' : 'No steps'}</div>
+        </div>
+        <button class="jar-del-btn" onclick="event.stopPropagation();deleteJarItem(${i})">✕</button>
+      </div>`).join('');
+    btn.disabled = false;
+  }
+}
+
+function openJarModal(idx) {
+  editingJarIdx = idx;
+  const jar = getJar(), item = idx !== null ? jar[idx] : null;
+  selectedEmoji = item ? item.emoji : JAR_EMOJIS[0];
+  const emojiPicker = JAR_EMOJIS.map(e => `<span class="emoji-opt${e === selectedEmoji ? ' selected' : ''}" onclick="selectEmoji('${e}',this)">${e}</span>`).join('');
+  document.getElementById('jarModalContent').innerHTML = `
+    <div class="modal-title-row">
+      <span style="font-size:2rem" id="selectedEmojiDisplay">${selectedEmoji}</span>
+      <div class="modal-title">${idx === null ? 'Add to Jar' : 'Edit Recipe'}</div>
+    </div>
+    <div class="jar-modal-section"><div class="jar-modal-label">Pick an emoji</div><div class="emoji-pick">${emojiPicker}</div></div>
+    <div class="jar-modal-section"><div class="jar-modal-label">Meal name</div><input class="jar-modal-input" id="jarName" type="text" placeholder="e.g. Mom's lasagna" value="${item ? item.name : ''}" /></div>
+    <div class="jar-modal-section"><div class="jar-modal-label">Ingredients</div><textarea class="jar-modal-textarea" id="jarIngredients" placeholder="One per line&#10;e.g. 2 cups flour">${item && item.ingredients ? item.ingredients.join('\n') : ''}</textarea><div class="jar-modal-hint">One ingredient per line</div></div>
+    <div class="jar-modal-section"><div class="jar-modal-label">Steps</div><textarea class="jar-modal-textarea" id="jarSteps" placeholder="One per line&#10;e.g. Preheat oven to 180°C">${item && item.steps ? item.steps.join('\n') : ''}</textarea><div class="jar-modal-hint">One step per line</div></div>
+    <div class="jar-modal-actions">
+      ${idx !== null ? `<button class="jar-modal-delete" onclick="deleteJarItem(${idx},true)">Delete</button>` : ''}
+      <button class="jar-modal-save" onclick="saveJarItem()">${idx === null ? 'Add to jar' : 'Save changes'}</button>
+    </div>`;
+  document.getElementById('jarModalBg').style.display = 'flex';
+}
+
+function selectEmoji(e, el) {
+  selectedEmoji = e;
+  document.querySelectorAll('.emoji-opt').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('selectedEmojiDisplay').textContent = e;
+}
+
+function saveJarItem() {
+  const name = document.getElementById('jarName').value.trim();
+  if (!name) return;
+  const ingredients = document.getElementById('jarIngredients').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+  const steps = document.getElementById('jarSteps').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+  const jar = getJar(), entry = { name, emoji: selectedEmoji, ingredients, steps };
+  if (editingJarIdx === null) jar.push(entry); else jar[editingJarIdx] = entry;
+  setJar(jar); closeModal('jarModalBg'); renderJar();
+}
+
+function deleteJarItem(idx, fromModal) {
+  const jar = getJar(); jar.splice(idx, 1); setJar(jar);
+  if (fromModal) closeModal('jarModalBg');
+  renderJar();
+}
+
+function pickFromJar() {
+  const jar = getJar(); if (!jar.length) return;
+  const pick = jar[Math.floor(Math.random() * jar.length)];
+  const pickIdx = jar.indexOf(pick);
+  document.getElementById('jarResult').innerHTML = `
+    <div class="jar-result">
+      <div class="jar-result-emoji">${pick.emoji}</div>
+      <div class="jar-result-name">${pick.name}</div>
+      <div class="jar-result-sub">Tonight's dinner ✦</div>
+      ${pick.ingredients && pick.ingredients.length || pick.steps && pick.steps.length ? `<button class="jar-result-view" onclick="openJarViewModal(${pickIdx})">View recipe →</button>` : ''}
+    </div>`;
+}
+
+function openJarViewModal(idx) {
+  const item = getJar()[idx];
+  openModal({ ...item, type: 'Custom', time: '—', description: 'From your dinner jar 🫙', _jarIdx: idx });
+  document.getElementById('mSaveBtn').style.display = 'none';
+  const btn = document.createElement('button');
+  btn.id = 'jarEditFromView'; btn.className = 'modal-save-btn'; btn.style.marginTop = '.5rem';
+  btn.textContent = '✏️ Edit this recipe';
+  btn.onclick = () => { closeModal('modalBg'); openJarModal(idx); };
+  document.getElementById('mSaveBtn').insertAdjacentElement('afterend', btn);
+}
+
+// Init
+renderAllSaved();
+</script>
+</body>
+</html>
